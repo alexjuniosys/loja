@@ -1,0 +1,16 @@
+image: php:7-fpm
+
+pipelines:
+  branches:
+    master:
+     - step:
+        script:
+          - apt-get update && apt-get install -y python-dev zip libmcrypt-dev mysql-client
+          - apt-get install -y phpmyadmin
+          - docker-php-ext-install mcrypt && docker-php-ext-install pdo_mysql
+          - curl -O https://bootstrap.pypa.io/get-pip.py
+          - python get-pip.py
+          - pip install awscli
+          - zip -r deploy.zip ./
+          - aws s3 rm s3://loja-eb/deploy.zip
+          - aws s3 sync . s3://loja-eb
